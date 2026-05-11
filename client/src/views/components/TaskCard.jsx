@@ -34,7 +34,7 @@ function TaskCard({
 
         <button
           className="delete-btn"
-          onClick={() => onDelete(task.id)}
+          onClick={() => onDelete(task._id)}
         >
           Delete
         </button>

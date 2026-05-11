@@ -5,7 +5,7 @@ class TaskPresenter {
     return [
       ...tasks,
       {
-        id: Date.now(),
+        _id: Date.now().toString(),
         ...newTask
       }
     ];
@@ -14,14 +14,14 @@ class TaskPresenter {
   static deleteTask(tasks, taskId) {
 
     return tasks.filter(
-      (task) => task.id !== taskId
+      (task) => task._id !== taskId
     );
   }
 
   static updateTask(tasks, updatedTask) {
 
     return tasks.map((task) =>
-      task.id === updatedTask.id
+      task._id === updatedTask._id
         ? updatedTask
         : task
     );

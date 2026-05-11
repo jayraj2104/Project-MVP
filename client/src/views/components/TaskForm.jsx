@@ -1,75 +1,90 @@
 import "./TaskForm.css";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
 
 function TaskForm({
   onAddTask,
   onUpdateTask,
-  editingTask
+  editingTask,
 }) {
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] =
-    useState("");
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    status: "Pending",
+  });
 
-  const [status, setStatus] =
-    useState("Pending");
 
+  // Auto fill form in edit mode
   useEffect(() => {
 
     if (editingTask) {
 
-      setTitle(editingTask.title);
-
-      setDescription(
-        editingTask.description
-      );
-
-      setStatus(editingTask.status);
+      setFormData({
+        title: editingTask.title || "",
+        description: editingTask.description || "",
+        status: editingTask.status || "Pending",
+      });
     }
 
   }, [editingTask]);
 
-  const handleSubmit = (e) => {
+
+  // Handle input changes
+  const handleChange = (e) => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+
+  // Handle form submit
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    if (!title.trim() || !description.trim()) {
-          alert("Please fill all fields");
-          return;
-      }
+    // Validation
+    if (
+      !formData.title ||
+      !formData.description
+    ) {
 
-    const taskData = {
-      title,
-      description,
-      status
-    };
+      alert("Please fill all fields");
 
-    if (editingTask) {
-
-      onUpdateTask({
-        id: editingTask.id,
-        ...taskData
-      });
-
-    } else {
-
-      onAddTask(taskData);
+      return;
     }
 
-    setTitle("");
-    setDescription("");
-    setStatus("Pending");
+    const isSuccess = editingTask
+      ? await onUpdateTask(formData)
+      : await onAddTask(formData);
+
+    if (!isSuccess) {
+      return;
+    }
+
+    // Reset form
+    setFormData({
+      title: "",
+      description: "",
+      status: "Pending",
+    });
   };
 
+
   return (
+
     <div className="task-form-container">
 
       <div className="task-form-card">
 
         <h2>
-          {editingTask
-            ? "Update Task"
-            : "Create Task"}
+          {
+            editingTask
+              ? "Update Task"
+              : "Create New Task"
+          }
         </h2>
 
         <form
@@ -79,59 +94,78 @@ function TaskForm({
 
           <div className="form-group">
 
-            <label>Task Title</label>
+            <label>
+              Task Title
+            </label>
 
             <input
               type="text"
+              name="title"
               placeholder="Enter task title"
-              value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
-              }
+              value={formData.title}
+              onChange={handleChange}
             />
 
           </div>
 
+
           <div className="form-group">
 
-            <label>Description</label>
+            <label>
+              Task Description
+            </label>
 
             <textarea
-              rows="5"
+              name="description"
               placeholder="Enter task description"
-              value={description}
-              onChange={(e) =>
-                setDescription(
-                  e.target.value
-                )
-              }
-            ></textarea>
+              rows="4"
+              value={formData.description}
+              onChange={handleChange}
+            />
 
           </div>
 
+
           <div className="form-group">
 
-            <label>Status</label>
+            <label>
+              Task Status
+            </label>
 
             <select
-              value={status}
-              onChange={(e) =>
-                setStatus(e.target.value)
-              }
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
             >
-              <option>Pending</option>
-              <option>Completed</option>
+
+              <option value="Pending">
+                Pending
+              </option>
+
+              <option value="In Progress">
+                In Progress
+              </option>
+
+              <option value="Completed">
+                Completed
+              </option>
+
             </select>
 
           </div>
+
 
           <button
             type="submit"
             className="task-submit-btn"
           >
-            {editingTask
-              ? "Update Task"
-              : "Save Task"}
+
+            {
+              editingTask
+                ? "Update Task"
+                : "Add Task"
+            }
+
           </button>
 
         </form>
