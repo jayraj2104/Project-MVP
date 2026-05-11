@@ -16,10 +16,15 @@ const app = express();
 // Middleware
 const allowedOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 
-app.use(cors({
-  origin: allowedOrigin,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://project-mvp-mu.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10kb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
