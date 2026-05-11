@@ -21,10 +21,12 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://project-mvp-mu.vercel.app",
+      "https://project-mvp-git-main-jayraj-s-projects.vercel.app",
     ],
     credentials: true,
   })
 );
+
 app.use(express.json({ limit: "10kb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
